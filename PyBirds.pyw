@@ -408,11 +408,7 @@ def simulateProjectile(win,start,arcStart,obstacles,targets, physicsConstants):
     t = 0 # Start time
     canBreak = True # Determines projectiles ability to damage/destroy obstacles
     stationary = False # Ensure run once
-
-    # Draw projectile
-    projectile = Circle(start, 5)
-    projectile.setFill("blue")
-    projectile.draw(win)
+    projectile = drawProjectile(win, start) # Draw projectile
 
     while x < win.getWidth() and x > 0 and y < win.getHeight(): # Test out of bounds
         newPoint = Point(x, y)
@@ -466,17 +462,31 @@ def simulateProjectile(win,start,arcStart,obstacles,targets, physicsConstants):
             canBreak = False # Can only break on first collision
 
         # => movement step complete
-        # Redraw projectile at new position
         projectile.undraw()
-        projectile = Circle(newPoint, 5)
-        projectile.setFill("blue")
-        projectile.draw(win)
+        projectile = drawProjectile(win, newPoint)
 
         time.sleep(1/gameSpeed) # Wait before next step
 
     # => Projectile out of bounds (off-screen)
     projectile.undraw()
 
+
+# Draws a projectile at position or otherwise a position indicator if out of bounds
+def drawProjectile(win, position):
+    
+    # If projectile is above top of window, display indicator instead
+    if position.getY() < 0: 
+        bottom = Point(position.getX(),10)
+        top = Point(position.getX(),2)
+        projectile = Line(bottom,top)
+        projectile.setArrow('last')
+    else:
+        projectile = Circle(position, 5)
+        
+    projectile.setFill("blue")
+    projectile.draw(win)
+    return projectile
+        
 
 # Checks if one obstacle would overlap any other
 def checkForObstacleOverlap(obstacleDimensions,obstacles):
